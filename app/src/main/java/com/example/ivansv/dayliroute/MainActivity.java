@@ -9,6 +9,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
     Button btnStart;
     Button btnStop;
+    StartReceiver startReceiver = new StartReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,14 +22,14 @@ public class MainActivity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startService(new Intent(MainActivity.this, TimeManagementService.class));
+                startReceiver.startTrackingAlarm(MainActivity.this);
             }
         });
 
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopService(new Intent(MainActivity.this, TimeManagementService.class));
+                stopService(new Intent(MainActivity.this, LocationTrackingService.class));
             }
         });
     }
