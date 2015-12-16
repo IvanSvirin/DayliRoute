@@ -10,6 +10,9 @@ public class MainActivity extends AppCompatActivity {
     Button btnStart;
     Button btnStop;
     StartReceiver startReceiver = new StartReceiver();
+    public static boolean serviceRunningFlag = false;
+    public static int hour;
+    public static int minute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startReceiver.startTrackingAlarm(MainActivity.this);
+                hour = 8;
+                minute = 0;
+                startReceiver.startTrackingAlarm(MainActivity.this, hour, minute);
             }
         });
 
