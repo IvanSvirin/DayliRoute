@@ -20,19 +20,21 @@ public class StartReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         GregorianCalendar newCal = new GregorianCalendar();
-        int day = newCal.get(Calendar.DAY_OF_WEEK);
+        MainActivity.dayOfWeek = newCal.get(Calendar.DAY_OF_WEEK);
 
-        if (MainActivity.serviceRunningFlag) {
+        if (MainActivity.isServiceRunning) {
             context.stopService(new Intent(context, LocationTrackingService.class));
             MainActivity.hour = 8;
+            MainActivity.minute = 0;
             startTrackingAlarm(context, MainActivity.hour, MainActivity.minute);
-            MainActivity.serviceRunningFlag = false;
+            MainActivity.isServiceRunning = false;
         } else {
-            if (day != 1 && day != 7) {
+            if (MainActivity.dayOfWeek != 1 && MainActivity.dayOfWeek != 7) {
                 context.startService(new Intent(context, LocationTrackingService.class));
                 MainActivity.hour = 17;
+                MainActivity.minute = 0;
                 startTrackingAlarm(context, MainActivity.hour, MainActivity.minute);
-                MainActivity.serviceRunningFlag = true;
+                MainActivity.isServiceRunning = true;
             }
         }
 
@@ -51,6 +53,13 @@ public class StartReceiver extends BroadcastReceiver {
         startCalendar.setTimeInMillis(System.currentTimeMillis());
         startCalendar.set(Calendar.HOUR_OF_DAY, hour);
         startCalendar.set(Calendar.MINUTE, minute);
+        if (hour == 8) {
+            if (MainActivity.dayOfWeek == 6) {
+                startCalendar.set(Calendar.DAY_OF_WEEK, 2);
+            } else {
+                startCalendar.set(Calendar.DAY_OF_WEEK, MainActivity.dayOfWeek + 1);
+            }
+        }
         alarmStartMgr.set(AlarmManager.RTC, startCalendar.getTimeInMillis(), alarmStartIntent);
     }
 

@@ -9,10 +9,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 public class LocationTrackingService extends Service {
@@ -103,6 +106,8 @@ public class LocationTrackingService extends Service {
 
     @Override
     public void onDestroy() {
+        String name = (String) android.text.format.DateFormat.format("ddMMyyyyhhmmss", System.currentTimeMillis()) + ".txt";
+        writeTrack(dayTrack, name);
         super.onDestroy();
         Toast.makeText(getApplicationContext(), "STOP_SERVICE", Toast.LENGTH_SHORT).show();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -112,6 +117,29 @@ public class LocationTrackingService extends Service {
         }
         locationManager.removeUpdates(listener);
     }
+
+    private void writeTrack(ArrayList<Position> positions, String name) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Position pos : positions) {
+            stringBuilder.append(pos.getLatitude()).append(" ").append(pos.getLongitude()).append(" ").append(pos.getTime()).append(" ");
+        }
+        File fileName = null;
+        String sdState = Environment.getExternalStorageState();
+        if (sdState.equals(Environment.MEDIA_MOUNTED)) {
+            File sdDir = Environment.getExternalStorageDirectory();
+            fileName = new File(sdDir, name);
+            try {
+                FileWriter f = new FileWriter(fileName);
+                f.write(String.valueOf(stringBuilder));
+                f.flush();
+                f.close();
+            } catch (Exception e) {
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "ACCESS DENIED!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     public class MyLocationListener implements LocationListener {
 
@@ -124,7 +152,7 @@ public class LocationTrackingService extends Service {
                 position.setTime(loc.getTime());
                 dayTrack.add(position);
                 Toast.makeText(getApplicationContext(), "Latitude" + loc.getLatitude(), Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), "Longitude"+  loc.getLongitude(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Longitude" + loc.getLongitude(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "Provider" + loc.getProvider(), Toast.LENGTH_SHORT).show();
             }
         }
