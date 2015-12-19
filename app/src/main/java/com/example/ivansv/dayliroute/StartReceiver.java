@@ -56,6 +56,7 @@ public class StartReceiver extends BroadcastReceiver {
         if (hour == 8) {
             if (MainActivity.dayOfWeek == 6) {
                 startCalendar.set(Calendar.DAY_OF_WEEK, 2);
+                startCalendar.set(Calendar.WEEK_OF_YEAR, Calendar.WEEK_OF_YEAR + 1);
             } else {
                 startCalendar.set(Calendar.DAY_OF_WEEK, MainActivity.dayOfWeek + 1);
             }
